@@ -1,0 +1,48 @@
+
+Récupérer tous les albums
+    SELECT * FROM albums
+
+Récupérer tous les albums dont le titre contient "Great" 
+#les% permettent de chercher un élément peu importe sa position
+    SELECT * FROM albums WHERE Title LIKE '%Great%';
+
+Donner le nombre total d'albums contenus dans la base (sans regarder les id bien sûr)
+#count permet de compter le nombre d'enregistrements d'une table
+    SELECT COUNT(*) FROM albums
+
+Supprimer tous les albums dont le nom contient "music"
+    SELECT * FROM albums WHERE Title NOT LIKE '%music%';
+
+
+Récupérer tous les albums écrits par AC/DC
+#méthode from where (produit cartésien suivi d'une restriction) sur la clé étrangère ArtistID, puis nouvelle restriction avec like
+    SELECT * FROM albums, artists WHERE albums.ArtistId = artists.ArtistId AND Name LIKE '%AC/DC%';
+
+
+
+Récupérer tous les titres des albums de AC/DC
+#même méthode appliquée sur la question précédente mais avec une table en plus, projection de colonnes via select et renommer colonnes via as
+    SELECT  albums.Title AS Titre_Album , artists.Name AS Artist, tracks.Name AS Titres_Tracks FROM albums, artists, tracks WHERE albums.ArtistId = artists.ArtistId AND albums.AlbumId = tracks.AlbumId AND artists.Name LIKE '%AC/DC%'; 
+
+
+
+Récupérer la liste des titres de l'album "Let There Be Rock"
+#même méthode appliquée ci-dessus
+    SELECT albums.Title AS Titre_Album, tracks.Name AS Titre_Tracks FROM albums, tracks WHERE albums.AlbumId = tracks.AlbumId AND albums.Title LIKE '%Let There Be Rock%'
+
+
+
+Afficher le prix de cet album ainsi que sa durée totale
+#même méthode appliquée ci-dessus pour join en ajoutant fonction SUM au niveau de select
+    SELECT SUM(invoice_items.UnitPrice)AS prix_album, SUM(tracks.Milliseconds)  AS durée_album_millseconds FROM albums, tracks, invoice_items WHERE albums.AlbumId = tracks.AlbumId AND tracks.TrackId = invoice_items.TrackId AND albums.Title LIKE '%Let There Be Rock%'
+
+
+
+Afficher le coût de l'intégralité de la discographie de "Deep Purple"
+#pareil mais avec 4 tables
+    SELECT SUM(invoice_items.UnitPrice) AS prix_discographie FROM albums, tracks, artists, invoice_items WHERE albums.AlbumId = tracks.AlbumId AND artists.ArtistId = albums.ArtistId AND tracks.TrackId = invoice_items.TrackId AND artists.Name LIKE '%Deep Purple%'
+
+
+Créer l'album de ton artiste favori en base, en renseignant correctement les trois tables albums, artists et tracks
+#utilisation de OR avec parenthèses
+SELECT  albums.Title AS Titre_Album , artists.Name AS Artist, tracks.Name AS Titres_Tracks FROM albums, artists, tracks WHERE albums.ArtistId = artists.ArtistId AND albums.AlbumId = tracks.AlbumId AND artists.Name LIKE ("%Queen%") AND (tracks.Name LIKE ("%Under Pressure%") OR tracks.Name LIKE ("%The Miracle%") OR tracks.Name LIKE ("%Save Me%") OR tracks.Name LIKE ("%Flash%"))
